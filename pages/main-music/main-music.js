@@ -1,19 +1,16 @@
 // pages/main-music/main-music.js
 import {getMusicBanner,getPlaylistDetail,getSongMenuList} from "../../services/music"
 import { querySelect} from "../../utils/query-select"
-//import throttle from "../../utils/throttle"
 import {throttle} from "underscore"
 import recommendStore from "../../store/recommendStore"
 import rankingStore,{rankingsMap} from "../../store/rankingStore"
 import playerStore from "../../store/playerStore"
 
+const app=getApp()
 const querySelectThrottle=throttle(querySelect,100,{trailing:false})
 
 Page({
 
-    /**
-     * 页面的初始数据
-     */
     data: {
         searchValue:"",
         banners:[],
@@ -27,44 +24,39 @@ Page({
 
         //巅峰榜数据
         rankingInfos:{},
-        isEmpty:true
+        isEmpty:true,
+
+        //当前正在播放的歌曲
+        currentSong:{},
+        isPlaying:false,
 
     },
-    onSearchClick(){
-        //console.log("onSearchClick")
-        wx.navigateTo({
-          url: '/pages/detail-search/detail-search',
-        })
-    },
 
-    /**
-     * 生命周期函数--监听页面加载
-     */
     onLoad(options) {
         this.fetchMusicBannner()
-        // this.fetchRecommendSongs()
         this.fetchSongMenuList()
         
-        //监听数据字段
+        //监听数据字段--热门歌单：点击更多后使用
         recommendStore.onState("recommendSongInfo",this.handleRecommendSongs)
-        // rankingStore.onState("newRanking",this.handleNewRanking)
-        // rankingStore.onState("originRanking",this.handleOriginRanking)
-        // rankingStore.onState("upRanking",this.handleUpRanking)
-        
-        // rankingStore.onState("newRanking",this.getRankingHandler("newRanking"))
-        // rankingStore.onState("originRanking",this.getRankingHandler("originRanking"))
-        // rankingStore.onState("upRanking",this.getRankingHandler("upRanking"))
         for(const key in rankingsMap){
             rankingStore.onState(key,this.getRankingHandler(key))
         }
         
-        //发起action
+        //发起action--获取热门歌单
         recommendStore.dispatch("fetchRecommendSongsAction")
-
+        //发起action--获取巅峰榜数据
         rankingStore.dispatch("fetchRankingDataAction")
+
+        playerStore.onStates(["currentSong","isPlaying"],this.handlePlayInfos)
+
+        //获取屏幕尺寸
+        this.setData({
+            screenWidth:app.globalData.screenWidth
+        })
         
     },
 
+    //获取热门歌单、推荐歌单数据
     async fetchSongMenuList(){
         const res=await getSongMenuList()
         const res1=await getSongMenuList("华语")
@@ -76,35 +68,18 @@ Page({
 
     },
 
+    //获取轮播图数据
     async fetchMusicBannner(){
         const res=await getMusicBanner()
-        //console.log(res)
         this.setData({
             banners:res.banners
         })
     },
 
-    async fetchRecommendSongs(){
-        // const res=await getPlaylistDetail(this.data.hotMusicId)
-        // //console.log(res)
-        // const playlist=res.playlist
-        // const recommendSongs=playlist.tracks.slice(0,6)
-        // this.setData({
-        //     recommendSongs
-        // })
-    },
-
+    //轮播图载入完毕时触发
     onBannerImageLoad(event){
-        //获取image组件的高度
-        // const query=wx.createSelectorQuery()
-        // query.select(".banner-image").boundingClientRect()
-        // query.exec(res=>{
-        //     this.setData({
-        //         bannerHeight:res[0].height
-        //     })
-        // })
+        //根据屏幕显示区域的高度获取轮播图组件的高度
         querySelectThrottle(".banner-image").then(res=>{
-            //console.log(res)
             this.setData({
                 bannerHeight:res[0].height
             })
@@ -112,6 +87,7 @@ Page({
         
     },
 
+    //推荐歌曲只显示热门歌单的前6首
     handleRecommendSongs(value){
         if(value.tracks){
             this.setData({
@@ -121,25 +97,21 @@ Page({
         
     },
 
-    // handleNewRanking(value){
-    //     const newRankingInfos={...this.data.rankingInfos,newRanking:value}
-    //     this.setData({
-    //         rankingInfos:newRankingInfos
-    //     })
-    // },
-    // handleOriginRanking(value){
-    //     const newRankingInfos={...this.data.rankingInfos,originRanking:value}
-    //     this.setData({
-    //         rankingInfos:newRankingInfos
-    //     })
-    // },
-    // handleUpRanking(value){
-    //     const newRankingInfos={...this.data.rankingInfos,upRanking:value}
-    //     this.setData({
-    //         rankingInfos:newRankingInfos
-    //     })
-    // },
+    //歌曲播放小窗口数据
+    handlePlayInfos({currentSong,isPlaying}){
+       if(currentSong){
+            this.setData({
+                currentSong
+            })
+       }
+       if(isPlaying!==undefined){
+            this.setData({
+                isPlaying
+            })
+        }
+    },
 
+    //巅峰榜数据传递给store，方便点击进入具体页面获取
     getRankingHandler(ranking){
         return value=>{
             const newRankingInfos={...this.data.rankingInfos,[ranking]:value}
@@ -150,29 +122,46 @@ Page({
         }
     },
 
+    
+
+    //推荐歌曲 单首歌曲的点击，为了传递数据：播放列表
+    onSongItemTap(event){
+        playerStore.setState("playSongList",this.data.recommendSongs)
+        playerStore.setState("playSongIndex",event.currentTarget.dataset.index)
+    },
+
+    //点击推荐歌曲的更多，跳转进去新页面
     onRecommendMoreClick(){
         wx.navigateTo({
           url: '/pages/detail-song/detail-song?type=recommend',
         })
     },
 
-    //推荐歌曲 单首歌曲的点击，为了传递播放列表
-    onSongItemTap(event){
-        playerStore.setState("playSongList",this.data.recommendSongs)
-        playerStore.setState("playSongIndex",event.currentTarget.dataset.index)
+    //点击播放小窗口的点击/暂停图标
+    onPlayOrPauseBtnTap(){
+        playerStore.dispatch("changeMusicStatusAction")
+
+    },
+
+    //点击小串口唱片图片进入歌曲页
+    onPlayBarAlbumTap(){
+        wx.navigateTo({
+          url: '/pages/music-player/music-player',
+        })
+    },
+
+    //跳转进搜索页面
+    onSearchClick(){
+        wx.navigateTo({
+          url: '/pages/detail-search/detail-search',
+        })
     },
     
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
     onUnload() {
         recommendStore.offState("recommendSongInfo",this.handleRecommendSongs)
         rankingStore.offState("newRanking",this.handleNewRanking)
         rankingStore.offState("originRanking",this.handleOriginRanking)
         rankingStore.offState("upRanking",this.handleUpRanking)
-        
-    },
-
-  
+        playerStore.offStates(["currentSong"],this.handlePlayInfos)
+    }
 })

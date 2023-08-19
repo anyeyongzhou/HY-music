@@ -8,7 +8,6 @@ const recommendStore=new HYEventStore({
     actions:{
         fetchRecommendSongsAction(ctx){
             getPlaylistDetail(3778678).then(res=>{
-                //console.log(res)
                 ctx.recommendSongInfo=res.playlist
             })
         }
