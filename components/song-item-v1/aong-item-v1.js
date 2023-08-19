@@ -25,7 +25,7 @@ Component({
             const id=this.data.itemData.id
             //console.log(id)
             wx.navigateTo({
-              url: `/pages/music-player/music-player?id=${id}`,
+              url: `/packagePlayer/pages/music-player/music-player?id=${id}`,
             })
         }
     }
