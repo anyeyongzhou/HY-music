@@ -1,0 +1,11 @@
+<!--components/song-item-v1/aong-item-v1.wxml-->
+<view class="item" bind:tap="onSongItemTap">
+    <view class="index">{{index}}</view>
+    <view class="info">
+        <view class="name">{{itemData.name}}</view>
+       <view class="source">
+        <image src="/assets/images/icons/sq_icon.png" mode="widthFix" class="icon"/>
+        <view>{{itemData.ar[0].name}}</view>
+       </view>
+    </view>
+</view>

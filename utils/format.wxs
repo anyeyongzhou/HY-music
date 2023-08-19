@@ -1,0 +1,47 @@
+function formatPrice(price){
+    return "$" + price
+}
+
+function calcPrice(books){
+    return "￥"+books.reduce(function(preValue,item){
+        return preValue+item.price
+    },0 )
+}
+
+function formatCount(count){
+    var numCount=parseInt(count)
+    if(numCount>=100000000){
+        return (numCount/100000000).toFixed(1)+"亿"
+    }else if(numCount>=10000){
+        return (numCount/10000).toFixed(1)+"万"
+    }else{
+        return numCount
+    }
+}
+
+function formatDate(time){
+    time=time/1000
+    var minute=Math.floor(time/60)
+    var second=Math.floor(time)%60
+
+    return padLeft(minute)+":"+padLeft(second)
+}
+
+function padLeft(time){
+    // if(time<10){
+    //     return "0"+time
+    // }else if(time<1){
+    //     return "00"
+    // }else{
+    //     return time
+    // }
+    time=time+""
+    return ("00"+time).slice(time.length)
+}
+
+module.exports={
+    formatPrice:formatPrice,
+    calcPrice:calcPrice,
+    formatCount:formatCount,
+    formatDate:formatDate
+}
