@@ -1,0 +1,69 @@
+/* pages/main-profile/main-profile.wxss */
+page{
+    padding: 30rpx;
+    box-sizing: border-box;
+    background-color: #f3f3f3;
+}
+
+.section{
+    background-color: #fff;
+    border-radius: 10rpx;
+    padding: 30rpx;
+    margin-bottom: 30rpx;
+}
+
+.userInfo{
+    display: flex;
+    align-items: center;
+}
+
+.userInfo .avatar{
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 60%;
+}
+
+.userInfo .nickname{
+    margin-left: 20px;
+    font-size: 30rpx;
+}
+
+.tabs{
+    display: flex;
+    justify-content: space-around;
+}
+
+.tabs .item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tabs .item .icon{
+    width: 60rpx;
+    height: 60rpx;
+}
+
+.tabs .item .name{
+    margin-top: 20rpx;
+    font-size: 24rpx;
+}
+
+.mine-menu .content .header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 24rpx;
+    color: #888;
+}
+
+.dialog .input{
+    height: 70rpx;
+    line-height: 70rpx;
+    border: 1px solid #eee;
+    border-radius: 6rpx;
+    margin: 30rpx;
+    padding: 0 16rpx;
+    font-size: 28rpx;
+}
+

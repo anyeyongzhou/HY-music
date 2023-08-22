@@ -1,0 +1,5 @@
+<button class="avatar-wrapper" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+  <image class="avatar" src="{{avatarUrl}}"></image>
+</button>
+<input type="nickname" class="weui-input" placeholder="请输入昵称" bind:change="onnickNameChange" value="{{nickname}}"/>
+<button type="primary" bind:tap="onConfirmTap" >确定</button>

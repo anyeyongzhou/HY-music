@@ -12,6 +12,11 @@ App({
                 this.globalData.contentHeight=res.screenHeight-res.statusBarHeight-44
             }
         })
+
+        //云开发能力初始化
+        wx.cloud.init({
+            env:"cloud1-9gm2w5hvbbaff6e6"
+        })
     },
     globalData:{
         screenWidth:375,

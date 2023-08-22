@@ -3,20 +3,20 @@
     "projectname": "HY-Music",
     "setting": {
         "compileHotReLoad": false,
-        "urlCheck": true
+        "urlCheck": false
     },
     "condition": {
         "miniprogram": {
             "list": [
                 {
                     "name": "",
-                    "pathName": "pages/music-player/music-player",
-                    "query": "id=2049512697",
+                    "pathName": "pages/main-profile/main-profile",
+                    "query": "",
                     "launchMode": "default",
                     "scene": null
                 }
             ]
         }
     },
-    "libVersion": "2.18.0"
+    "libVersion": "2.33.0"
 }
